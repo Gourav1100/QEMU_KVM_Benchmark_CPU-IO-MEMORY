@@ -15,23 +15,25 @@ Initializing worker threads...
 
 Threads started!
 
-Total operations: 58032950 (5802400.62 per second)
+Total operations: 58518862 (5850899.39 per second)
 
-56672.80 MiB transferred (5666.41 MiB/sec)
+57147.33 MiB transferred (5713.77 MiB/sec)
 
 
 General statistics:
     total time:                          10.0001s
-    total number of events:              58032950
+    total number of events:              58518862
 
 Latency (ms):
          min:                                    0.00
          avg:                                    0.00
-         max:                                    0.16
+         max:                                    0.19
          95th percentile:                        0.00
-         sum:                                14168.10
+         sum:                                12944.82
 
 Threads fairness:
-    events (avg/stddev):           29016475.0000/185625.00
-    execution time (avg/stddev):   7.0840/0.04
+    events (avg/stddev):           29259431.0000/109097.00
+    execution time (avg/stddev):   6.4724/0.00
 
+
+time taken - 40146.26513671875

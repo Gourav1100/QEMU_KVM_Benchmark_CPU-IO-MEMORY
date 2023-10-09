@@ -2,7 +2,7 @@ import libvirt
 import json
 import subprocess
 from vm_handler import VM_CONFIGS, WORK_DIR
-from time import sleep
+from time import sleep, time
 from base64 import b64decode
 
 """"
@@ -73,6 +73,7 @@ def run_test(level):
     index = 0
     for qemu_agent_command in qemu_agent_command_list:
         qemu_agent_command_json = json.dumps(qemu_agent_command)
+        begin = time() * 1000
         virsh_command = (
             "sudo virsh -c qemu:///system qemu-agent-command {} '{}'".format(
                 vm_name, qemu_agent_command_json
@@ -112,6 +113,8 @@ def run_test(level):
                     .split("\n")[0]
                 )
             print(b64decode(status_response["return"]["out-data"]).decode("utf-8"))
+            time_taken = (time() * 1000) - begin
+            print(f"time taken - {time_taken}")
             print(
                 f"Writing to {WORK_DIR}/results/{qemu_agent_command_list_names[index]}"
             )
@@ -119,7 +122,7 @@ def run_test(level):
                 f"{WORK_DIR}/results/{qemu_agent_command_list_names[index]}", "w"
             ) as file:
                 file.write(
-                    b64decode(status_response["return"]["out-data"]).decode("utf-8")
+                    f"{b64decode(status_response['return']['out-data']).decode('utf-8')}\ntime taken - {time_taken}"
                 )
                 file.close()
             print("done")

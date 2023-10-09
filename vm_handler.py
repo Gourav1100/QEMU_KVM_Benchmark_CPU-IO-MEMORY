@@ -1,6 +1,7 @@
 import subprocess
 import libvirt
 import os
+from time import time
 from xml_builder import generate_xml
 
 _PASSWORD = "debian"
@@ -67,19 +68,22 @@ def run_vm(level):
     if level not in VM_CONFIGS.keys():
         print("invalid configuration")
         return
+    begin = time() * 1000
     print("Connecting to QEMU")
     connection = libvirt.open("qemu:///system")
     print("Creating VM")
     connection.createXML(generate_xml(VM_CONFIGS[level]))
+    end = time() * 1000
     print("VM created.")
     connection.close()
-    print(f"""VM '{VM_CONFIGS[level]["name"]}' created and started.""")
+    print(f"""VM '{VM_CONFIGS[level]["name"]}' created and started. time taken: {end - begin} seconds""")
 
 
 def stop_vm(level):
     if level not in VM_CONFIGS.keys():
         print("invalid configuration")
         return
+    begin = time() * 1000
     print("Connecting to QEMU")
     connection = libvirt.open("qemu:///system")
     print("Searching for VM")
@@ -87,8 +91,9 @@ def stop_vm(level):
     print("Shutting down VM")
     try:
         domain.destroy()
+        end = time() * 1000
         print(
-            "VM '{}' has been forcefully destroyed.".format(VM_CONFIGS[level]["name"])
+            "VM '{}' has been forcefully destroyed. time taken: {} seconds".format(VM_CONFIGS[level]["name"], end - begin)
         )
     except libvirt.libvirtError as e:
         print(
