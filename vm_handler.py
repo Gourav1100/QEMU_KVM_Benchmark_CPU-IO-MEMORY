@@ -1,8 +1,9 @@
 import subprocess
 import libvirt
 import os
-from time import time
+from time import time, sleep
 from xml_builder import generate_xml
+import json
 
 _PASSWORD = "debian"
 WORK_DIR = "/media/G/Codes/cloud/assignment1"
@@ -73,10 +74,52 @@ def run_vm(level):
     connection = libvirt.open("qemu:///system")
     print("Creating VM")
     connection.createXML(generate_xml(VM_CONFIGS[level]))
+    ping_args = {
+        "execute": "guest-exec",
+        "arguments": {
+            "path": "/usr/bin/echo",
+            "arg": ["foo"],
+            "capture-output": True,
+        },
+    }
+    ping_jsonified = json.dumps(ping_args)
+    ping_command = (
+        f"sudo virsh qemu-agent-command {VM_CONFIGS[level]['name']} '{ping_jsonified}'"
+    )
+    process = (
+        subprocess.run(
+            ping_command,
+            shell=True,
+            capture_output=True,
+        )
+        .stdout.decode("utf-8")
+        .split("\n")[0]
+    )
+    timeout = 6
+    while timeout and not len(process):
+        print(
+            f"waiting for vm to boot (remaining retries: {timeout}). Retrying in 10 seconds..."
+        )
+        sleep(10.0)
+        process = (
+            subprocess.run(
+                ping_command,
+                shell=True,
+                capture_output=True,
+            )
+            .stdout.decode("utf-8")
+            .split("\n")[0]
+        )
+        timeout -= 1
+    if not timeout:
+        raise Exception("VM did not start")
+    print(process)
     end = time() * 1000
     print("VM created.")
     connection.close()
-    print(f"""VM '{VM_CONFIGS[level]["name"]}' created and started. time taken: {end - begin} seconds""")
+    print(
+        f"""VM '{VM_CONFIGS[level]["name"]}' created and started. time taken: {end - begin} seconds"""
+    )
 
 
 def stop_vm(level):
@@ -93,7 +136,9 @@ def stop_vm(level):
         domain.destroy()
         end = time() * 1000
         print(
-            "VM '{}' has been forcefully destroyed. time taken: {} seconds".format(VM_CONFIGS[level]["name"], end - begin)
+            "VM '{}' has been forcefully destroyed. time taken: {} seconds".format(
+                VM_CONFIGS[level]["name"], end - begin
+            )
         )
     except libvirt.libvirtError as e:
         print(

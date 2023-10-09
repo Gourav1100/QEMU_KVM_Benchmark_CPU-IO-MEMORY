@@ -2,7 +2,7 @@ def generate_xml(config):
     return f"""
     <domain type="kvm">
     <name>{config["name"]}</name>
-    <uuid>ea58d274-3fb5-4ccb-8e26-7beaddc29c5f</uuid>
+    <uuid>7a6fb1c8-696f-4b10-a8b8-64be39c9391d</uuid>
     <metadata>
         <libosinfo:libosinfo xmlns:libosinfo="http://libosinfo.org/xmlns/libvirt/domain/1.0">
         <libosinfo:os id="http://debian.org/debian/11"/>
@@ -37,7 +37,7 @@ def generate_xml(config):
         <emulator>/usr/bin/qemu-system-x86_64</emulator>
         <disk type="file" device="disk">
         <driver name="qemu" type="qcow2"/>
-        <source file="/home/gourav/codes/cloud/assignment1/images/debian.qcow2"/>
+        <source file="/media/G/Codes/cloud/assignment1/images/debian.qcow2"/>
         <target dev="vda" bus="virtio"/>
         <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
         </disk>
@@ -122,7 +122,7 @@ def generate_xml(config):
         <address type="pci" domain="0x0000" bus="0x03" slot="0x00" function="0x0"/>
         </controller>
         <interface type="network">
-        <mac address="52:54:00:7a:d0:07"/>
+        <mac address="52:54:00:7c:e3:9e"/>
         <source network="default"/>
         <model type="virtio"/>
         <address type="pci" domain="0x0000" bus="0x01" slot="0x00" function="0x0"/>

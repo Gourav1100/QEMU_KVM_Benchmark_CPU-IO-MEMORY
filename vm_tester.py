@@ -15,8 +15,6 @@ sysbench fileio --file-test-mode=rndrw --threads=8 run > io_{vm_name}_rndrw.log
 
 
 def run_test(level):
-    print("Connecting to QEMU")
-    connection = libvirt.open("qemu:///system")
     print("Setting up config")
     vm_name = VM_CONFIGS[level]["name"]
     print("generating testing command")
@@ -82,8 +80,10 @@ def run_test(level):
         print("running test")
         print(f"Running: {virsh_command}")
         try:
+            process = subprocess.run(virsh_command, shell=True, capture_output=True)
+            print(process)
             result = json.loads(
-                subprocess.run(virsh_command, shell=True, capture_output=True)
+                process
                 .stdout.decode("utf-8")
                 .split("\n")[0]
             )
@@ -129,5 +129,3 @@ def run_test(level):
             index += 1
         except libvirt.libvirtError as e:
             print("Error executing command: {}".format(e))
-
-    connection.close()
